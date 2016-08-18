@@ -20,9 +20,18 @@ Role Variables
   - lsyncd_master_node: nfs_1
     - This is a part of, or the complete hostname that you want to assing as the "master" lsyncd
 
-  - play_hosts
-    - Built-in variable containing all the hosts in the current play that this role finds itself in.
-
+  - lsyncd_secondary_nodes: 
+    - A list of nodes that should receive data
+ 
+  - lsyncd_public_key / lsyncd_private_key:
+    - Public and private keys are stored in variables and hopefully in a vault. To preserve formatting, use the pipe character, like:
+  ````
+  lsyncd_private_key: |
+    -----BEGIN RSA PRIVATE KEY-----
+    xxxxyyyy
+    zzzzaaaa
+    -----END RSA PRIVATE KEY-----
+  ````
 Dependencies
 ------------
 
@@ -35,16 +44,5 @@ Including an example of how to use your role (for instance, with variables passe
 
     - hosts: servers
       roles:
-         - { role: markmaas.ansible-lsyncd-cluster }
+         - { role: ackmann-dickenson.ansible-lsyncd-cluster }
 
-License
--------
-
-GPLv3
-
-Author Information
-------------------
-
-Mark Maas
-mark@maas-martin.nl
-Fastest way to my heart is via email
