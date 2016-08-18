@@ -1,17 +1,25 @@
 ---
 # tasks file for ansible-lsyncd-cluster
-# Yes yes, took me longer than it should have taken Michael ;-)
+#
+#
+#
+# Modified April 2016 to use inventory_hostname rather than ansible_hostname
+# TODO
+# Move the keys into the secrets file
+# Write up how this is supposed to work
+# Fork from original since it's changed so much
 
 - name: Install lsyncd
   apt:
     name: lsyncd
     state: installed
-    
+
 - name: Places the public key
   authorized_key:
-    key: "{{ lookup('file', 'lsyncd.pub') }}"
-    user: root
-    
+    # key: "{{ lookup('file', 'lsyncd.pub') }}"
+    key: "{{ lsyncd_public_key }}"
+    user: "{{ username }}"
+
 - name: Create lsync paths
   file:
     dest: "{{ item }}"
@@ -26,12 +34,12 @@
     dest: /etc/lsyncd/lsyncd.conf.lua
     backup: yes
   notify: restart lsyncd
-  
+
 - name: Create sync path
   file:
     dest: "{{ lsyncd_path }}"
     state: directory
-  
+
 # Currently I use the root user to sync and use a different role to setup sshd to make sure root is only allowed from a certain group of ip's and only via a key. Perhaps I should make this configurable in the future, but lsync runs with root privileges anyway.
 - name: Place an ssh config for the root user
   template:
@@ -41,17 +49,26 @@
     group: root
     backup: yes
     mode: 0600
-  
-  
+
 # Create your own key! Don't use the supplied one obviously!
+# - name: Places a private key for syncing purposes
+#   copy:
+#     src: lsyncd.key
+#     dest: "/root/.ssh/lsyncd.key"
+#     owner: root
+#     group: root
+#     mode: 0600
+#
+
 - name: Places a private key for syncing purposes
   copy:
-    src: lsyncd.key
-    dest: /root/.ssh/lsyncd.key
+    content: "{{ lsyncd_private_key }}"
+    dest: "/root/.ssh/lsyncd.key"
     owner: root
     group: root
-    mode: 0600    
-    
+    mode: 0600
+
+
 - name: Adjust the maximum amount of inotify watches. If needed
   lineinfile:
     backup: yes
@@ -61,18 +78,20 @@
     state: present
   notify: reload sysctl
   when: lsyncd_max_user_watches is defined
-  
+
 - name: Deactivate the "not master node(s)"
   service:
     name: lsyncd
     enabled: no
     state: stopped
-  when: ansible_hostname != '{{ lsyncd_master_node }}'
-  
+  when: inventory_hostname != '{{ lsyncd_master_node }}'
+
 - name: Activate the "master node"
   service:
     name: lsyncd
     enabled: yes
     state: started
-  when: ansible_hostname == '{{ lsyncd_master_node }}'
-  
+  notify: restart lsyncd
+  when: inventory_hostname == '{{ lsyncd_master_node }}'
+
+

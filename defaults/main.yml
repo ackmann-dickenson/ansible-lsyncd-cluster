@@ -9,3 +9,19 @@ lsyncd_path: /data
 
 # This is a part of, or the complete hostname that you want to assing as the "master" lsyncd
 lsyncd_master_node: nfs_1
+
+syncd_secondary_nodes:
+ - nfs_2
+ - nfs_3
+
+# Public and private keys are stored in vars, and hopefully in a vault too
+# Hint: in a vault, use a pipe symbol to preserve private key formatting, like:
+# ---
+# lsyncd_private_key: |
+#   -----BEGIN RSA PRIVATE KEY-----
+#  xxxxyyyy
+#  zzzzaaaa
+#   -----END RSA PRIVATE KEY-----
+#
+lsyncd_public_key:
+lsyncd_private_key:

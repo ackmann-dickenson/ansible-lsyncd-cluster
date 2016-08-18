@@ -6,10 +6,10 @@
   shell: sysctl -p
   ignore_errors: true
   notify: restart lsyncd
-  
+
 # This will restart lsyncd but only on the designated "master" node.
 - name: restart lsyncd
   service:
     name: lsyncd
     state: restarted
-  when: ansible_hostname == '{{ lsyncd_master_node }}')
+  when: ansible_hostname == '{{ lsyncd_master_node }}'

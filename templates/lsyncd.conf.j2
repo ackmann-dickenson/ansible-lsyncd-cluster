@@ -7,15 +7,25 @@
 -- Standard settings for lsyncd
 settings {
   logfile = "/var/log/lsyncd/lsyncd.log",
-  statusFile = "/var/log/lsyncd/lsyncd-status.log", 
+  statusFile = "/var/log/lsyncd/lsyncd-status.log",
   statusInterval = 20,
   insist = 1
 }
 
--- List of targets where we want our data to be copied to
+{# -- List of targets where we want our data to be copied to
 targetlist = {
 {% for host in play_hosts|sort if hostvars[host]['ansible_hostname'] != ansible_hostname %}
   "{{ hostvars[host]['ansible_hostname'] }}:{{ lsyncd_path }}/"{% if not loop.last %},
+{% endif %}
+{% endfor %}
+
+} #}
+
+
+-- List of targets where we want our data to be copied to
+targetlist = {
+{% for host in lsyncd_secondary_nodes %}
+  "{{ host }}:{{ lsyncd_path }}/"{% if not loop.last %},
 {% endif %}
 {% endfor %}
 

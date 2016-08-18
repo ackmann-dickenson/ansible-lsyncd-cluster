@@ -1,7 +1,7 @@
 lsyncd-cluster
 =========
 
-Installs and configures a set of lsyncd installations on different hosts and assings 1 host to be the master
+Installs and configures a set of lsyncd installations on different hosts and assings 1 host to be the master. From https://github.com/markmaas/ansible-lsyncd-cluster.
 
 Requirements
 ------------
@@ -13,13 +13,13 @@ Role Variables
 
   - lsyncd_max_user_watches: 4194304
     - Desired number of inotify watches in the kernel. Should be more then the number of files and folders you want to be kept in sync
-    
+
   - lsyncd_path: /data
     - The folder you want to keep in sync
 
   - lsyncd_master_node: nfs_1
     - This is a part of, or the complete hostname that you want to assing as the "master" lsyncd
-    
+
   - play_hosts
     - Built-in variable containing all the hosts in the current play that this role finds itself in.
 
